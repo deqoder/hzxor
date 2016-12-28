@@ -1,0 +1,45 @@
+<html>
+<head>
+<script src = "http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script>
+function encrypt()
+{
+	var input = $("#in").val();
+	var key = $("#key").val();
+	var output = "";
+	var j = 0;
+	var klen = key.length;
+	for (var i = 0; i != input.length; ++i)
+	{	
+		var input_code = input.charCodeAt(i);
+		var input_key = key.charCodeAt(j++ % klen);
+		var new_code;
+		var ascii_sum = 0x20 + 0x7e;
+		var cjk_base_v1_sum = 0x4e00 + 0x9fa5;
+		if (input_code >= 0x20 && input_code < 0x7f)
+		{
+			new_code = ascii_sum - input_code + input_key;
+			if (new_code > 0x7e) new_code = (new_code - 0x20) % (0x7f - 0x20)+ 0x20;
+		}
+		else if (input_code >= 0x4e00 && input_code <= 0x9fa5)
+		{
+			new_code = cjk_base_v1_sum - input_code + input_key;
+			if (new_code > 0x9fa5) new_code = (new_code - 0x4e00) % (0x9fa6 - 0x4e00) + 0x4e00; 
+		}
+		else new_code = input_code;
+		
+		output += String.fromCharCode(new_code);
+
+	}
+	$("#out").val(output);
+}
+</script>
+</head>
+<body>
+<input id = "key"></input>
+<button onclick="encrypt()">encode</button>
+<br/>
+<textarea id = "in"></textarea>
+<textarea id = "out"></textarea>
+</body>
+</html>
